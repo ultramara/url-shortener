@@ -1,0 +1,29 @@
+# Environments
+venv/
+.venv/
+env/
+
+# Python bytecode & cache
+**/__pycache__/
+**/*.py[cod]
+
+# Databases & Volumes
+pg_data/
+redis_data/
+
+# IDEs
+.idea/
+.vscode/
+.git/
+.gitignore
+.dockerignore
+
+# gRPC Generated Files
+generated/
+
+# logs
+*.log
+
+# GitHub files
+README.md
+LICENSE

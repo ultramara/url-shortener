@@ -1,0 +1,36 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+*.so
+
+# Environments
+venv/
+.venv/
+env/
+.env
+.env.*
+
+# IDEs
+.idea/
+.vscode/
+*.pyproj
+*.pyproj.user
+*.sln
+.vs/
+
+# Databases & Volumes
+pg_data/
+redis_data/
+
+# Logs & OS trash
+*.log
+.DS_Store
+Thumbs.db
+
+# gRPC Generated Files
+generated/

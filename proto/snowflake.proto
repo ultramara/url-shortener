@@ -1,0 +1,13 @@
+syntax="proto3";
+
+package snowflake;
+
+message EmptyRequest {}
+
+message GenerateIdResponse {
+	int64 snowflake_id = 1;
+}
+
+service Snowflake {
+	rpc GenerateId (EmptyRequest) returns (GenerateIdResponse);
+}
