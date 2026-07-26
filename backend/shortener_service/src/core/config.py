@@ -8,9 +8,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     
     # Redis
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_PASSWORD: Optional[str] = None
+    REDIS_URL: str
 
     # Начальный URL скоращенной ссылки
     BASE_URL: str

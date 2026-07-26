@@ -19,6 +19,6 @@ class UrlRepository:
         return new_url
 
     async def get_long_url(self, short_code) -> str:
-        query = select(Urls).where(Urls.short_code == short_code)
+        query = select(Urls.long_url).where(Urls.short_code == short_code)
         result = await self.db.execute(query)
         return result.scalars().first()

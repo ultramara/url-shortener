@@ -1,5 +1,6 @@
 ﻿import datetime
 from typing import Callable, Awaitable
+from urllib.request import CacheFTPHandler
 from fastapi import Depends, HTTPException, status
 import httpx
 import grpc
@@ -7,6 +8,7 @@ import grpc
 from src.schemas.urls import URLShortenRequest, URLShortenResponse
 from src.algorithms.shortener import UrlShortener
 from src.repositories.url import UrlRepository
+from src.repositories.url_cache_repository import UrlCacheRepository
 from src.api.deps import get_shortener, get_url_repository
 
 
@@ -58,3 +60,21 @@ async def create_short_url_core(
                 status_code=status.HTTP_502_BAD_GATEWAY,
                 detail=f"Ошибка снежинки (gRPC): {exc.details()}"
             )
+
+
+async def get_long_url_core(
+    short_code: str,
+    cache_repository: UrlCacheRepository,
+    url_repository: UrlRepository
+) -> str | None:
+    long_url = await cache_repository.get_long_url(short_code)
+    if long_url is not None:
+        return long_url
+
+    db_record = await url_repository.get_long_url(short_code)
+    if db_record is None:
+        return None
+
+    await cache_repository.set_long_url(short_code, db_record)
+
+    return db_record
