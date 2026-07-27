@@ -5,7 +5,7 @@ from fastapi import Depends, HTTPException, status
 import httpx
 import grpc
 
-from src.schemas.urls import URLShortenRequest, URLShortenResponse
+from src.schemas.urls import URLShortenResponse
 from src.algorithms.shortener import UrlShortener
 from src.repositories.url import UrlRepository
 from src.repositories.url_cache_repository import UrlCacheRepository
@@ -15,11 +15,22 @@ from src.api.deps import get_shortener, get_url_repository
 async def create_short_url_core(
     snowflake_id: int,
     long_url: str,
+    custom_code: str | None,
     shortener: UrlShortener,
-    url_repository: UrlRepository 
+    url_repository: UrlRepository,
+    cache_repository: UrlCacheRepository,
 ) -> URLShortenResponse:
     try:
-        short_code = shortener.create_short_code(snowflake_id)
+        if custom_code:
+            exists = url_repository.get_long_url(custom_code)
+            if exists is None:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Данный короткий код уже занят: {custom_code}"
+                )
+            short_code = custom_code
+        else:
+            short_code = shortener.create_short_code(snowflake_id)
 
         await url_repository.create(
             url_id=snowflake_id,
@@ -28,6 +39,8 @@ async def create_short_url_core(
         )
 
         short_url = shortener.create_short_url(short_code)
+
+        await cache_repository.set_long_url(short_code, long_url)
 
         return URLShortenResponse(
             short_url=short_url,

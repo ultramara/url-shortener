@@ -22,16 +22,19 @@ router = APIRouter()
 
 def create_shorten_endpoint(id_dependency):
     async def endpoint(
-        long_url: URLShortenRequest,
+        shorten_request: URLShortenRequest,
         snowflake_id: int = Depends(id_dependency),
         shortener: UrlShortener = Depends(get_shortener),
         url_repository: UrlRepository = Depends(get_url_repository),
+        cache_repository: UrlCacheRepository = Depends(get_cache_repository)
     ):
         return await create_short_url_core(
             snowflake_id=snowflake_id,
-            long_url=str(long_url.long_url),
+            long_url=str(shorten_request.long_url),
+            custom_code=shorten_request.custom_code,
             shortener=shortener,
             url_repository=url_repository,
+            cache_repository=cache_repository
         )
 
     return endpoint
